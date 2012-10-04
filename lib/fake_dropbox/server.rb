@@ -93,7 +93,7 @@ module FakeDropbox
       return status 400 if File.exists?(dir) and not File.directory?(dir)
 
       FileUtils.makedirs(dir)
-      File.open(file_path, 'w+') do |file|
+      File.open(file_path, 'wb+') do |file|
         file.write(request.body.read)
       end
       update_metadata(dropbox_path)
