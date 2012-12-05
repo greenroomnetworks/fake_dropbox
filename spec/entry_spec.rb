@@ -23,6 +23,7 @@ describe 'FakeDropbox::Entry' do
         metadata[:path].should == '/dummy.txt'
         metadata[:modified].should == File.mtime(file_path).rfc822
         metadata[:icon].should == "page_white"
+        metadata[:mime_type].should == "text/plain"
       end
 
       context 'when file has not changed' do
@@ -58,6 +59,7 @@ describe 'FakeDropbox::Entry' do
         metadata[:path].should == '/dropbox.png'
         metadata[:modified].should == File.mtime(file_path).rfc822
         metadata[:icon].should == "page_white_picture"
+        metadata[:mime_type].should == "image/png"
       end
     end
 

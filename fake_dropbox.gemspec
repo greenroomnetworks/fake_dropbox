@@ -23,12 +23,13 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
-  
+
   s.add_dependency 'sinatra', '>= 1.3.1'
   s.add_dependency 'json', '>= 1.6.1'
   s.add_dependency 'rack', '>= 1.3.2'
   s.add_dependency 'rack-test', '>= 0.6.1'
   s.add_dependency 'webmock', '>= 1.7.7'
-  
+  s.add_dependency 'mime-types'
+
   s.add_development_dependency 'rspec', '~> 2.7.0'
 end

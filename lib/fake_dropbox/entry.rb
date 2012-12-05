@@ -1,4 +1,5 @@
 require 'time'
+require 'mime/types'
 
 module FakeDropbox
 
@@ -76,6 +77,7 @@ module FakeDropbox
         else
           "page_white"
         end
+        metadata[:mime_type] = MIME::Types.type_for(File.extname(dropbox_path)).first.to_s
         metadata[:rev] = rand(100000000).to_s(16)
       end
 
