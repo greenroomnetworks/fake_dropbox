@@ -239,7 +239,7 @@ describe 'FakeDropbox::Server' do
   end
 
   describe "GET /1/media/dropbox/<path>" do
-    it "returns a temporary file URL" do
+    it "returns a temporary downloadable file URL" do
       File.open(File.join(@tmpdir, 'file.ext'), 'w')
       get "/1/media/dropbox/file.ext"
       media_data = JSON.parse(last_response.body)
@@ -261,6 +261,22 @@ describe 'FakeDropbox::Server' do
       get "/0/view/fake_media_path/file.ext"
       last_response.should be_ok
       last_response.body.should == "This is a test."
+    end
+  end
+
+  describe "GET /1/shares/dropbox/<path>" do
+    it "returns a temporary viewable file URL" do
+      File.open(File.join(@tmpdir, 'file.ext'), 'w')
+      get "/1/shares/dropbox/file.ext"
+      data = JSON.parse(last_response.body)
+      data['url'].should ==
+        'https://db.tt/fake_share'
+      data.should include 'expires'
+    end
+
+    it "returns a 404 error if the file is missing" do
+      get "/1/shares/dropbox/missing.ext"
+      last_response.status.should == 404
     end
   end
 

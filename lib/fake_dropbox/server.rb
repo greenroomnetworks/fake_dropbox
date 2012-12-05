@@ -135,6 +135,16 @@ module FakeDropbox
       }.to_json
     end
 
+    get '/1/shares/:mode*' do
+      file_path = File.join(@dropbox_dir, params[:splat])
+      return status 404 unless File.exists?(file_path)
+
+      {
+        url: "https://db.tt/fake_share",
+        expires: (Time.now + MEDIA_EXPIRATION).rfc822
+      }.to_json
+    end
+
     post '/:version/fileops/create_folder' do
       dir = params[:path]
       dir_path = File.join(@dropbox_dir, dir)
