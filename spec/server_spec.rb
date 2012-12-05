@@ -236,6 +236,15 @@ describe 'FakeDropbox::Server' do
         metadata.should include 'contents'
       end
     end
+
+    context "when the file does not exist" do
+      it "returns error 404" do
+        get "/0/metadata/dropbox/none.ext"
+        last_response.status.should == 404
+        data = JSON.parse(last_response.body)
+        data['error'].should == "Path '/none.ext' not found"
+      end
+    end
   end
 
   describe "GET /1/media/dropbox/<path>" do

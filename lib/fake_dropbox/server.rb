@@ -103,12 +103,15 @@ module FakeDropbox
     end
 
     get '/:version/metadata/:mode*' do
-      file_path = File.join(@dropbox_dir, params[:splat][0])
-      return status 404 unless File.exists?(file_path)
-
-      list = (params[:list] != 'false')
-      content_type :json
-      metadata(params[:splat][0], list).to_json
+      dropbox_path = params[:splat][0]
+      file_path = File.join(@dropbox_dir, dropbox_path)
+      if File.exists?(file_path)
+        list = (params[:list] != 'false')
+        content_type :json
+        metadata(params[:splat][0], list).to_json
+      else
+        [404, {error: "Path '#{dropbox_path}' not found"}.to_json]
+      end
     end
 
     get '/u/:uid/*' do
