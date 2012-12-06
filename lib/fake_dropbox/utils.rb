@@ -6,8 +6,8 @@ module FakeDropbox
       FakeDropbox::Entry.new(@dropbox_dir, dropbox_path).metadata(list_contents)
     end
 
-    def update_metadata(dropbox_path)
-      FakeDropbox::Entry.new(@dropbox_dir, dropbox_path).update_metadata
+    def save_revision(dropbox_path)
+      FakeDropbox::Entry.new(@dropbox_dir, dropbox_path).save_revision
     end
 
     def safe_path(path)

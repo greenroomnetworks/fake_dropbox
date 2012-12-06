@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rack-test', '>= 0.6.1'
   s.add_dependency 'webmock', '>= 1.7.7'
   s.add_dependency 'mime-types'
+  s.add_dependency 'hashie'
 
   s.add_development_dependency 'rspec', '~> 2.7.0'
 end

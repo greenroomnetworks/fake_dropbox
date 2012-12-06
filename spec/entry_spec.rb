@@ -36,10 +36,10 @@ describe 'FakeDropbox::Entry' do
         end
       end
 
-      context 'when file has changed (via update_metadata)' do
+      context 'when file has changed (via save_revision)' do
         it 'returns a new rev' do
           rev1 = build_entry('dummy.txt').metadata[:rev]
-          build_entry('dummy.txt').update_metadata
+          build_entry('dummy.txt').save_revision
           rev2 = build_entry('dummy.txt').metadata[:rev]
           rev1.should_not == rev2
           rev1.should_not be_nil

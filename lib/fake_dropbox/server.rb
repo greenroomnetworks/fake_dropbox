@@ -98,7 +98,7 @@ module FakeDropbox
       File.open(file_path, 'wb+') do |file|
         file.write(request.body.read)
       end
-      update_metadata(dropbox_path)
+      save_revision(dropbox_path)
 
       content_type :json
       metadata(dropbox_path).to_json

@@ -1,5 +1,6 @@
 require 'time'
 require 'mime/types'
+require 'hashie'
 
 module FakeDropbox
 
@@ -29,7 +30,7 @@ module FakeDropbox
     end
 
     def metadata(list_contents = false)
-      hash = get_metadata.dup
+      hash = live_metadata.dup
       if directory? and list_contents
         children = Dir.entries(full_path).reject { |x| ['.', '..'].include? x }
         hash[:contents] = children.map do |child_path|
@@ -39,11 +40,14 @@ module FakeDropbox
       hash
     end
 
-    def get_metadata
+    # Gets (or creates) metadata for this path, and returns a pointer to the
+    # live hash inside our storage. This allows clever clients to change
+    # metadata field values.
+    def live_metadata
       metadatas[full_path] ||= build_metadata
     end
 
-    def update_metadata
+    def save_revision
       metadatas[full_path] = build_metadata
     end
 
@@ -57,7 +61,7 @@ module FakeDropbox
 
       bytes = directory? ? 0 : File.size(full_path)
 
-      metadata = {
+      metadata = Hashie::Mash.new({
         thumb_exists: false,
         bytes: bytes,
         modified: File.mtime(full_path).rfc822,
@@ -66,7 +70,7 @@ module FakeDropbox
         size: "#{bytes} bytes",
         icon: "page_white",
         root: "dropbox"
-      }
+      })
 
       if directory?
         metadata[:icon] = "folder"
