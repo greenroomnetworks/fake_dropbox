@@ -64,20 +64,21 @@ module FakeDropbox
         path: File.join('/', dropbox_path),
         is_dir: directory?,
         size: "#{bytes} bytes",
+        icon: "page_white",
         root: "dropbox"
       }
 
       if directory?
         metadata[:icon] = "folder"
       else
-        metadata[:icon] = case full_path
-        when /\.(jpg|jpeg|gif|png)$/
-          "page_white_picture"
-        # todo: other file type to icon mappings
-        else
-          "page_white"
+        mime_type = MIME::Types.type_for(File.extname(dropbox_path)).first.to_s
+        metadata[:mime_type] = mime_type
+        is_image = mime_type.split('/').first == "image"
+        if is_image
+          metadata[:thumb_exists] = true
+          metadata[:icon] = "page_white_picture"
+          # todo: other file type to icon mappings
         end
-        metadata[:mime_type] = MIME::Types.type_for(File.extname(dropbox_path)).first.to_s
         metadata[:rev] = rand(100000000).to_s(16)
       end
 

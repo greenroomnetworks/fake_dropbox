@@ -54,6 +54,7 @@ describe 'FakeDropbox::Entry' do
         metadata = build_entry('dropbox.png').metadata
         metadata.should_not include :contents
         metadata.should include :rev
+        metadata[:thumb_exists].should be_true
         metadata[:is_dir].should == false
         metadata[:bytes].should == File.size(file_path)
         metadata[:path].should == '/dropbox.png'
