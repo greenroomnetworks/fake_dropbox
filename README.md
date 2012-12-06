@@ -17,6 +17,7 @@ be only partially implemented):
 * /files (POST)
 * /metadata
 * /media
+* /shares
 * /fileops/create_folder
 * /fileops/delete
 
