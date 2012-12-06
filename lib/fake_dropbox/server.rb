@@ -61,6 +61,8 @@ module FakeDropbox
       dir = File.join(@dropbox_dir, params[:splat])
       return status 404 unless File.exists?(dir) and File.directory?(dir)
 
+      # todo: integrate with Entry metadata system
+
       tempfile = params[:file][:tempfile]
       filename = params[:file][:filename]
       file_path = File.join(params[:splat], filename)
@@ -78,10 +80,10 @@ module FakeDropbox
     end
 
     get '/:version/files/:mode*' do
-      file_path = File.join(@dropbox_dir, params[:splat])
-      return status 404 unless File.exists?(file_path)
-
-      IO.read(file_path)
+      dropbox_path = params[:splat][0]
+      if_exists dropbox_path do
+        IO.read(full_path(dropbox_path))
+      end
     end
 
     put '/:version/files_put/:mode*' do
@@ -104,13 +106,10 @@ module FakeDropbox
 
     get '/:version/metadata/:mode*' do
       dropbox_path = params[:splat][0]
-      file_path = File.join(@dropbox_dir, dropbox_path)
-      if File.exists?(file_path)
+      if_exists dropbox_path do
         list = (params[:list] != 'false')
         content_type :json
         metadata(params[:splat][0], list).to_json
-      else
-        [404, {error: "Path '#{dropbox_path}' not found"}.to_json]
       end
     end
 
@@ -129,23 +128,23 @@ module FakeDropbox
     end
 
     get '/1/media/:mode*' do
-      file_path = File.join(@dropbox_dir, params[:splat])
-      return status 404 unless File.exists?(file_path)
-
-      {
-        url: "https://dl.dropbox.com/0/view/fake_media_path#{params[:splat][0]}",
-        expires: (Time.now + MEDIA_EXPIRATION).rfc822
-      }.to_json
+      dropbox_path = params[:splat][0]
+      if_exists dropbox_path do
+        {
+          url: "https://dl.dropbox.com/0/view/fake_media_path#{dropbox_path}",
+          expires: (Time.now + MEDIA_EXPIRATION).rfc822
+        }.to_json
+      end
     end
 
     get '/1/shares/:mode*' do
-      file_path = File.join(@dropbox_dir, params[:splat])
-      return status 404 unless File.exists?(file_path)
-
-      {
-        url: "https://db.tt/fake_share",
-        expires: (Time.now + MEDIA_EXPIRATION).rfc822
-      }.to_json
+      dropbox_path = params[:splat][0]
+      if_exists dropbox_path do
+        {
+          url: "https://db.tt/fake_share",
+          expires: (Time.now + MEDIA_EXPIRATION).rfc822
+        }.to_json
+      end
     end
 
     post '/:version/fileops/create_folder' do
@@ -164,19 +163,18 @@ module FakeDropbox
     end
 
     post '/:version/fileops/delete' do
-      entry = safe_path(params[:path])
-      entry_path = File.join(@dropbox_dir, entry)
+      dropbox_path = safe_path(params[:path])
+      if_exists dropbox_path do
+        entry_path = File.join(@dropbox_dir, dropbox_path)
+        metadata = metadata(dropbox_path)
+        FileUtils.remove_entry_secure entry_path
 
-      return status 404 unless File.exists?(entry_path)
+        # todo: update metadata store with a new "deleted" metadata entry
 
-      metadata = metadata(entry)
-      FileUtils.remove_entry_secure entry_path
-
-      # todo: update metadata store with a new "deleted" metadata entry
-
-      if params[:version] == '1'
-        content_type :json
-        metadata.to_json
+        if params[:version] == '1'
+          content_type :json
+          metadata.to_json
+        end
       end
     end
   end
