@@ -81,6 +81,8 @@ module FakeDropbox
         if is_image
           metadata[:thumb_exists] = true
           metadata[:icon] = "page_white_picture"
+        elsif mime_type == "application/pdf"
+          metadata[:icon] = "page_white_acrobat"
           # todo: other file type to icon mappings
         end
         metadata[:rev] = rand(100000000).to_s(16)
