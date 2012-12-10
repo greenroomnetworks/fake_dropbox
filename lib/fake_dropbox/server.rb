@@ -152,7 +152,9 @@ module FakeDropbox
       dir_path = File.join(@dropbox_dir, dir)
 
       return status 400 unless ['dropbox', 'sandbox'].include? params[:root]
-      return status 403 if File.exists?(dir_path)
+      if File.exists?(dir_path)
+        return [403, {error: "at path 'The folder '#{File.basename dir}' already exists.'"}.to_json]
+      end
       # seems that directories are created recursively (API docs wrong?)
       #return status 404 unless File.exists?(File.dirname(dir_path))
 

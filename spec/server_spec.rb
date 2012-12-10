@@ -361,6 +361,8 @@ describe 'FakeDropbox::Server' do
       it "returns error 403" do
         post "/0/fileops/create_folder", params
         last_response.status.should == 403
+        data = JSON.parse(last_response.body)
+        data['error'].should == "at path 'The folder 'somedir' already exists.'" # yes, the 'at path' is in the actual Dropbox response O_o
       end
     end
   end
